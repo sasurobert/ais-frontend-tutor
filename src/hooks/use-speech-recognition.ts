@@ -13,17 +13,24 @@ export interface UseSpeechRecognitionResult {
 export const useSpeechRecognition = (): UseSpeechRecognitionResult => {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
-    const [isSupported, setIsSupported] = useState(false);
+    const [isSupported] = useState(() =>
+        typeof window !== 'undefined' &&
+        !!((window as unknown as { SpeechRecognition: unknown }).SpeechRecognition ||
+            (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition)
+    );
     const [error, setError] = useState<string | null>(null);
 
     // Use a ref to store the recognition instance
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
         // Check browser support
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const win = window as unknown as { SpeechRecognition: any; webkitSpeechRecognition: any };
+        const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition;
 
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
@@ -40,7 +47,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionResult => {
                 setIsListening(false);
             };
 
-            recognition.onresult = (event: any) => {
+            recognition.onresult = (event: { resultIndex: number; results: { isFinal: boolean;[key: number]: { transcript: string } }[] }) => {
                 let finalTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
@@ -52,24 +59,24 @@ export const useSpeechRecognition = (): UseSpeechRecognitionResult => {
                 }
             };
 
-            recognition.onerror = (event: any) => {
+            recognition.onerror = (event: { error: string }) => {
                 console.error('Speech recognition error', event.error);
                 setError(event.error);
                 setIsListening(false);
             };
 
             recognitionRef.current = recognition;
-            setIsSupported(true);
         } else {
-            setIsSupported(false);
-            setError('Browser not supported');
+            setTimeout(() => {
+                setError('Browser not supported');
+            }, 0);
         }
 
         return () => {
             if (recognitionRef.current) {
                 try {
                     recognitionRef.current.stop();
-                } catch (e) {
+                } catch {
                     // Ignore errors on cleanup
                 }
             }

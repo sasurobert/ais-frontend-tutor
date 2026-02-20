@@ -15,7 +15,7 @@ class MockSpeechSynthesisUtterance {
     pitch: number = 1;
     onstart: (() => void) | null = null;
     onend: (() => void) | null = null;
-    onerror: ((event: any) => void) | null = null;
+    onerror: ((event: unknown) => void) | null = null;
     voice: SpeechSynthesisVoice | null = null;
 
     constructor(text: string) {
@@ -25,12 +25,12 @@ class MockSpeechSynthesisUtterance {
 }
 
 describe('useTextToSpeech', () => {
-    let originalSpeechSynthesis: any;
-    let originalSpeechSynthesisUtterance: any;
+    let originalSpeechSynthesis: unknown;
+    let originalSpeechSynthesisUtterance: unknown;
 
     beforeEach(() => {
         originalSpeechSynthesis = window.speechSynthesis;
-        originalSpeechSynthesisUtterance = window.SpeechSynthesisUtterance;
+        originalSpeechSynthesisUtterance = (window as unknown as { SpeechSynthesisUtterance: unknown }).SpeechSynthesisUtterance;
 
         // Mock window.speechSynthesis
         Object.defineProperty(window, 'speechSynthesis', {
@@ -49,7 +49,7 @@ describe('useTextToSpeech', () => {
         });
 
         // Mock SpeechSynthesisUtterance
-        (window as any).SpeechSynthesisUtterance = MockSpeechSynthesisUtterance as any;
+        (window as unknown as { SpeechSynthesisUtterance: unknown }).SpeechSynthesisUtterance = MockSpeechSynthesisUtterance;
 
         vi.clearAllMocks();
     });
@@ -59,7 +59,7 @@ describe('useTextToSpeech', () => {
         if (originalSpeechSynthesis) {
             Object.defineProperty(window, 'speechSynthesis', { value: originalSpeechSynthesis });
         }
-        window.SpeechSynthesisUtterance = originalSpeechSynthesisUtterance;
+        (window as unknown as { SpeechSynthesisUtterance: unknown }).SpeechSynthesisUtterance = originalSpeechSynthesisUtterance;
     });
 
     it('should initialize with default state', () => {

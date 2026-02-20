@@ -10,12 +10,11 @@ export interface UseTextToSpeechResult {
 
 export const useTextToSpeech = (): UseTextToSpeechResult => {
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [isSupported, setIsSupported] = useState(false);
+    const [isSupported] = useState(() => typeof window !== 'undefined' && !!window.speechSynthesis);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.speechSynthesis) {
-            setIsSupported(true);
 
             const loadVoices = () => {
                 const availableVoices = window.speechSynthesis.getVoices();

@@ -8,17 +8,16 @@ const mockStop = vi.fn();
 const mockAbort = vi.fn();
 
 // We need a way to access the current instance to trigger events
-let currentRecognitionInstance: any = null;
 
 class MockSpeechRecognition {
-    start = vi.fn().mockImplementation(function (this: any) {
+    start = vi.fn().mockImplementation(function (this: MockSpeechRecognition) {
         mockStart();
         // Async trigger to simulate real behavior
         setTimeout(() => {
             if (this.onstart) this.onstart();
         }, 0);
     });
-    stop = vi.fn().mockImplementation(function (this: any) {
+    stop = vi.fn().mockImplementation(function (this: MockSpeechRecognition) {
         mockStop();
         setTimeout(() => {
             if (this.onend) this.onend();
@@ -27,40 +26,38 @@ class MockSpeechRecognition {
     abort = mockAbort;
     onstart: (() => void) | null = null;
     onend: (() => void) | null = null;
-    onresult: ((event: any) => void) | null = null;
-    onerror: ((event: any) => void) | null = null;
+    onresult: ((event: unknown) => void) | null = null;
+    onerror: ((event: unknown) => void) | null = null;
     lang: string = '';
     continuous: boolean = false;
     interimResults: boolean = false;
 
     constructor() {
-        currentRecognitionInstance = this;
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
     }
 }
 
 describe('useSpeechRecognition', () => {
-    let originalSpeechRecognition: any;
-    let originalWebkitSpeechRecognition: any;
+    let originalSpeechRecognition: unknown;
+    let originalWebkitSpeechRecognition: unknown;
 
     beforeEach(() => {
-        originalSpeechRecognition = window.SpeechRecognition;
-        originalWebkitSpeechRecognition = window.webkitSpeechRecognition;
-        window.SpeechRecognition = MockSpeechRecognition as any;
-        window.webkitSpeechRecognition = MockSpeechRecognition as any;
+        originalSpeechRecognition = (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition;
+        originalWebkitSpeechRecognition = (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition;
+        (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = MockSpeechRecognition;
+        (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition = MockSpeechRecognition;
         vi.clearAllMocks();
-        currentRecognitionInstance = null;
     });
 
     afterEach(() => {
-        window.SpeechRecognition = originalSpeechRecognition;
-        window.webkitSpeechRecognition = originalWebkitSpeechRecognition;
+        (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = originalSpeechRecognition;
+        (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition = originalWebkitSpeechRecognition;
     });
 
     it('should initialize with failed support if browser does not support SpeechRecognition', () => {
-        delete (window as any).SpeechRecognition;
-        delete (window as any).webkitSpeechRecognition;
+        delete (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition;
+        delete (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition;
 
         const { result } = renderHook(() => useSpeechRecognition());
         expect(result.current.isSupported).toBe(false);

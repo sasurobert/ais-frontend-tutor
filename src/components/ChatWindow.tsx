@@ -44,27 +44,36 @@ export default function ChatWindow() {
     // If listening, we show current transcript. 
     // If not listening, we show what's typed (or what was recognized)
     useEffect(() => {
+        let mounted = true;
         if (isListening) {
-            setInput(transcript);
+            setTimeout(() => {
+                if (mounted) setInput(transcript);
+            }, 0);
         }
+        return () => { mounted = false; };
     }, [transcript, isListening]);
 
-    // Auto-send when listening stops (if we have input)
-    // NOTE: This is a simple implementation. In a real app we might want a "confirm" step or delay.
-    // For this MVP, we'll require manual send click for non-voice mode, 
-    // but maybe for Voice Mode we auto-send?
-    // Let's stick to manual toggle for now: Click Mic -> Speak -> Click Mic (Stop) -> Auto Send?
-    // Yes, that's a common pattern.
+    const handleSend = useCallback(() => {
+        if (!input.trim() || isLoading) return;
+        sendMessage(input);
+        setInput('');
+        resetTranscript();
+    }, [input, isLoading, sendMessage, resetTranscript]);
+
+    // Auto-send when listening stops
     const wasListening = useRef(false);
     useEffect(() => {
+        let mounted = true;
         if (wasListening.current && !isListening) {
-            // Just stopped listening
             if (input.trim()) {
-                handleSend();
+                setTimeout(() => {
+                    if (mounted) handleSend();
+                }, 0);
             }
         }
         wasListening.current = isListening;
-    }, [isListening]); // eslint-disable-line react-hooks/exhaustive-deps
+        return () => { mounted = false; };
+    }, [isListening, handleSend, input]);
 
     // TTS Logic: Speak new bot messages if in Voice Mode
     const lastMessageRef = useRef<number>(0);
@@ -78,12 +87,6 @@ export default function ChatWindow() {
         }
     }, [messages, isVoiceMode, speak]);
 
-    const handleSend = () => {
-        if (!input.trim() || isLoading) return;
-        sendMessage(input);
-        setInput('');
-        resetTranscript();
-    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
