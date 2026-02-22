@@ -1,6 +1,5 @@
 import React from 'react';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Mic } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { MaterialFilledButton } from '@ais/material/MaterialComponents';
 
