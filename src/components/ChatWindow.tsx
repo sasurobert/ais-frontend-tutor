@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTutor } from '../hooks/use-tutor';
 import { Send, User, Bot, Loader2, Headphones } from 'lucide-react';
 import clsx from 'clsx';
@@ -8,6 +8,8 @@ import { useSpeechRecognition } from '../hooks/use-speech-recognition';
 import { useTextToSpeech } from '../hooks/use-text-to-speech';
 import { VoiceInput } from './voice/VoiceInput';
 import { VoiceModeOverlay } from './voice/VoiceModeOverlay';
+import { MaterialTextButton, MaterialFilledButton } from '@ais/material/MaterialComponents';
+import { InteractiveParticleSystem } from '../../../../ais-frontend-common/src/components/InteractiveParticleSystem';
 
 export default function ChatWindow() {
     const { messages, sendMessage, isLoading, error } = useTutor();
@@ -103,23 +105,25 @@ export default function ChatWindow() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-neutral-900 text-neutral-100 relative">
+        <InteractiveParticleSystem color="#8b5cf6" count={1000} className="flex flex-col h-[calc(100vh-4rem)] bg-neutral-900/60 transition-colors duration-1000">
             <header className="p-4 border-b border-neutral-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Bot className="w-6 h-6 text-emerald-400" />
                     <h1 className="text-xl font-bold">AI Tutor Droid</h1>
                 </div>
                 {(isSpeechSupported && isTTSSupported) && (
-                    <button
+                    <MaterialTextButton
                         onClick={toggleVoiceMode}
                         className={clsx(
-                            "p-2 rounded-full transition-colors",
+                            "p-2 rounded-full transition-colors flex items-center justify-center",
                             isVoiceMode ? "bg-emerald-500/20 text-emerald-400" : "hover:bg-neutral-800 text-neutral-400"
                         )}
-                        title="Toggle Voice Mode"
+                        style={{ minWidth: '40px', padding: '8px', color: 'inherit' }}
                     >
-                        <Headphones className="w-5 h-5" />
-                    </button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
+                            <Headphones className="w-5 h-5" />
+                        </div>
+                    </MaterialTextButton>
                 )}
             </header>
 
@@ -191,13 +195,22 @@ export default function ChatWindow() {
                         className="flex-1 bg-neutral-800 border border-neutral-700 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         disabled={isLoading || isListening}
                     />
-                    <button
-                        type="submit"
+                    <MaterialFilledButton
+                        onClick={handleSend}
                         disabled={isLoading || !input.trim()}
-                        className="p-2 bg-emerald-600 rounded-full hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-2 transition-colors flex items-center justify-center"
+                        style={{
+                            backgroundColor: isLoading || !input.trim() ? '#4b5563' : '#059669',
+                            minWidth: '40px',
+                            minHeight: '40px',
+                            padding: '10px',
+                            borderRadius: '50%'
+                        }}
                     >
-                        <Send size={20} />
-                    </button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
+                            <Send size={20} />
+                        </div>
+                    </MaterialFilledButton>
                 </div>
             </form>
 
@@ -207,6 +220,6 @@ export default function ChatWindow() {
                 transcript={isListening ? transcript : (isSpeaking ? "Speaking..." : "")}
                 isListening={isListening || isSpeaking}
             />
-        </div>
+        </InteractiveParticleSystem>
     );
 }

@@ -2,6 +2,8 @@ import React from 'react';
 import { X, Mic } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { MaterialTextButton } from '@ais/material/MaterialComponents';
+import { InteractiveParticleSystem } from '../../../../../ais-frontend-common/src/components/InteractiveParticleSystem';
 
 interface VoiceModeOverlayProps {
     isOpen: boolean;
@@ -14,15 +16,23 @@ export function VoiceModeOverlay({ isOpen, onClose, transcript, isListening }: V
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-white animate-in fade-in duration-300">
+        <InteractiveParticleSystem
+            color={isListening ? '#ef4444' : '#6366f1'}
+            count={isListening ? 3000 : 1500}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-white animate-in fade-in duration-300"
+        >
             {/* Close Button */}
-            <button
-                onClick={onClose}
-                aria-label="Close"
-                className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-                <X className="w-8 h-8" />
-            </button>
+            <div className="absolute top-6 right-6">
+                <MaterialTextButton
+                    onClick={onClose}
+                    className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center"
+                    style={{ minWidth: '40px', padding: '8px', color: 'white' }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <X className="w-8 h-8" />
+                    </div>
+                </MaterialTextButton>
+            </div>
 
             {/* Visualizer (Simple Pulse) */}
             <div className={twMerge(
@@ -43,6 +53,6 @@ export function VoiceModeOverlay({ isOpen, onClose, transcript, isListening }: V
                     {transcript || <span className="text-neutral-600">Start speaking...</span>}
                 </p>
             </div>
-        </div>
+        </InteractiveParticleSystem>
     );
 }

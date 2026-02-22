@@ -2,6 +2,7 @@ import React from 'react';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { MaterialFilledButton } from '@ais/material/MaterialComponents';
 
 interface VoiceInputProps {
     isListening: boolean;
@@ -12,11 +13,9 @@ interface VoiceInputProps {
 
 export function VoiceInput({ isListening, onToggle, className, disabled }: VoiceInputProps) {
     return (
-        <button
+        <MaterialFilledButton
             onClick={onToggle}
             disabled={disabled}
-            aria-pressed={isListening}
-            aria-label={isListening ? "Stop listening" : "Start listening"}
             className={twMerge(
                 "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
                 isListening
@@ -25,12 +24,15 @@ export function VoiceInput({ isListening, onToggle, className, disabled }: Voice
                 disabled && "opacity-50 cursor-not-allowed",
                 className
             )}
+            style={{ minWidth: '40px', padding: '8px' }}
         >
-            {isListening ? (
-                <Mic className="w-5 h-5" />
-            ) : (
-                <Mic className="w-5 h-5" />
-            )}
-        </button>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isListening ? (
+                    <Mic className="w-5 h-5" />
+                ) : (
+                    <Mic className="w-5 h-5" />
+                )}
+            </div>
+        </MaterialFilledButton>
     );
 }
