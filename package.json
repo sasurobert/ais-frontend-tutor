@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "validate": "npm run lint && tsc --noEmit && npm audit && npm run build"
   },
   "dependencies": {
     "clsx": "^2.1.1",
