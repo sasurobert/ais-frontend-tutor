@@ -13,5 +13,11 @@ cd ais-frontend-common && rm -f package-lock.json && npm install --legacy-peer-d
 cd $APP_DIR
 cp -r ../ais-frontend-common ./ais-frontend-common
 
+# Fix Vite-specific syntax not compatible with Next.js:
+# Replace import.meta.env.VITE_xxx with process.env.NEXT_PUBLIC_xxx
+find ./ais-frontend-common/src -name "*.ts" -o -name "*.tsx" | xargs sed -i.bak 's/import\.meta\.env\.VITE_/process.env.NEXT_PUBLIC_/g' 2>/dev/null || true
+find ./ais-frontend-common/src -name "*.ts" -o -name "*.tsx" | xargs sed -i.bak 's/import\.meta\.env/process.env/g' 2>/dev/null || true
+find ./ais-frontend-common/src -name "*.bak" -delete 2>/dev/null || true
+
 # Install the main app
 npm install --legacy-peer-deps
