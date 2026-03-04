@@ -8,9 +8,10 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        setupFiles: [],
+        setupFiles: ['./test/setup.ts'],
         alias: {
-            '@': path.resolve(__dirname, './src')
+            '@': path.resolve(__dirname, './src'),
+            '@ais/material/MaterialComponents': path.resolve(__dirname, './test/__mocks__/MaterialComponents.ts'),
         }
     },
 });
