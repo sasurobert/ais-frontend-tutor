@@ -27,10 +27,10 @@
         "./src/*"
       ],
       "@ais/material/*": [
-        "./ais-frontend-common/src/material/*"
+        "../ais-frontend-common/src/material/*"
       ],
       "@ais/common/*": [
-        "./ais-frontend-common/src/components/*"
+        "../ais-frontend-common/src/*"
       ]
     }
   },

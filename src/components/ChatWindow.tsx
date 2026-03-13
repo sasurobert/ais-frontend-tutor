@@ -9,7 +9,7 @@ import { useTextToSpeech } from '../hooks/use-text-to-speech';
 import { VoiceInput } from './voice/VoiceInput';
 import { VoiceModeOverlay } from './voice/VoiceModeOverlay';
 import { MaterialTextButton, MaterialFilledButton } from '@ais/material/MaterialComponents';
-import { InteractiveParticleSystem } from '@ais/common/InteractiveParticleSystem';
+import { InteractiveParticleSystem } from '@ais/common/components/InteractiveParticleSystem';
 
 export default function ChatWindow() {
     const { messages, sendMessage, isLoading, error } = useTutor();

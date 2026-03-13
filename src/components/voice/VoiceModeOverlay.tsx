@@ -2,7 +2,7 @@ import React from 'react';
 import { X, Mic } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { MaterialTextButton } from '@ais/material/MaterialComponents';
-import { InteractiveParticleSystem } from '@ais/common/InteractiveParticleSystem';
+import { InteractiveParticleSystem } from '@ais/common/components/InteractiveParticleSystem';
 
 interface VoiceModeOverlayProps {
     isOpen: boolean;
